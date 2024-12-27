@@ -1,0 +1,30 @@
+[
+    {
+        "name": "",
+        "address": "",
+        "leadDate": "Date",
+        "totalOrdersPlaced": 23,
+        "status": "",
+        "pointOfContact": 
+        {
+            "name": "",
+            "role": "",
+            "phone": "",
+            "email": ""
+        },
+        "order": 
+        {
+            "categories": "",
+            "count": 23,
+            "dateTime": "",
+            "details": ""
+        },
+        "call":
+        {
+            "dateTime": "",
+            "topic": "",
+            "comments": ""
+        }
+    }
+
+]
