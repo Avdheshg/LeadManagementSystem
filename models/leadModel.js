@@ -1,80 +1,65 @@
 
 const mongoose = require('mongoose');
 
-const pointOfContactSchema = new mongoose.Schema({
-    name: 
-    {
-        type: String,
-        required: [true, 'Point of contact must have a name']
-    },
-    role: 
-    {
-        type: String,
-        enum: ['HOT', 'WARM', 'COLD'],
-        required: [true, 'Point of contact must have a role']
-    },
-    phone:
-    {
-        type: Number,
-        required: [true, 'Point of contact must have a phone number']
-    },
-    email: String
-});
-
-const orderSchema = mongoose.Schema({
-    category: 
-    {
-        type: String,
-        default: "Kitchen applicances"
-    },
-    count: 
-    {
-        type: Number,
-        default: 1,
-        min: [1, "Order count must be atleast 1"]
-    },
-    dateTime: 
-    {
-        type: Date,
-        default: Date.now
-    },
-    details: String
-});
-
-const callSchema = mongoose.Schema({
-    dateTime: 
-    {
-        type: Date,
-        required: [true, 'A call must have a date']
-    },
-    topic: 
-    {
-        type: String,
-        required: [true, 'A call must have a topic']
-    },
-    comments: String
-})
-
 const leadSchema = new mongoose.Schema({
     leadName:
     {
         type: String,
         unique: true,
-        required: [true, 'A name is required for the lead']
+        required: [true, 'A name is required for the lead'],
+        trim: true
     },
     address: String,
-    leadDate: Date.now,
-    totalOrdersPlaces: Number,
+    leadDate: Date,
+    totalOrdersPlaced: 
+    {
+        type: Number,
+        min: [0, "Total orders can't be less than 0"]
+    },
     status: String, 
+    leadType : 
+    {
+        type: String,
+        default: "HOT",
+        enum: ['HOT', 'WARM', 'COLD'], 
+    },
 
-    pointOfContact: [pointOfContactSchema],
-
-    order: [orderSchema],
-
-    call: [callSchema]
+    pointOfContact: 
+    [{
+        name: 
+        {
+            type: String,
+            required: [true, 'Point of contact must have a name']
+        },
+        role: 
+        {
+            type: String,
+            required: [true, 'Point of contact must have a role']
+        },
+        phone:
+        {
+            type: Number,
+            unique: true,
+            required: [true, 'Point of contact must have a phone number']
+        },
+        email: 
+        {
+            type: String,
+            trim: true,
+            lowercase: true,
+            unique: true,
+            validate: 
+            {
+                validator: function (value) {
+                  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+                },
+                message: 'Invalid email address format',
+            }
+        }
+    }],
 });
 
-const Lead = mongoose.model('Lead', leadSchema)
+const Lead = mongoose.model('Lead', leadSchema)   
 
 module.exports = Lead;
 
@@ -131,12 +116,6 @@ mongoose.connect('mongodb://localhost:27017/leads_db', { useNewUrlParser: true, 
             "role": "Owner",
             "phone": "+1234567890",
             "email": "john.doe@example.com"
-        },
-        {
-            "name": "Jane Smith",
-            "role": "Manager",
-            "phone": "+0987654321",
-            "email": "jane.smith@example.com"
         }
     ],
     "order": [
