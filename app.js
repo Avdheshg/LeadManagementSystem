@@ -1,13 +1,17 @@
 
 const express = require("express");
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+dotenv.config({ path: './config.env' });
+ 
 const Lead = require('./models/leadModel');
-const CallLog = require('./models/callLogModel')
+const CallLog = require('./models/callLogModel');
+const OrderModel = require("./models/orderModel");
 
 // const mongoConnectionString = `mongodb+srv://avdeshg804:CUBfPpehDzPWPWJL@cluster0.a97ew.mongodb.net/?retryWrites=true&w=majority&appName=LeadManagement`;     CUBfPpehDzPWPWJL     AeJhPGLYb4nRn0zu
 // const mongoConnectionString = `mongodb+srv://avdeshg804:CUBfPpehDzPWPWJL@cluster0.a97ew.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-const mongoConnectionString = `mongodb+srv://avdhesh:AeJhPGLYb4nRn0zu@cluster0.a97ew.mongodb.net/LeadManagement`;
-mongoose.connect(mongoConnectionString, {
+const DB = process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD);
+mongoose.connect(DB, {
 })
 .then(con => {
     console.log('DB Conneciton Successful!...');  
@@ -15,6 +19,9 @@ mongoose.connect(mongoConnectionString, {
 
 const app = express();
 app.use(express.json());
+
+
+// console.log(process.env);
 
 // *******************      ** Restaurants **                 ************************************
 app.get("/api/v1/leads/restaurants", async (req, res) => {
@@ -455,14 +462,17 @@ app.patch("/api/v1/leads/restaurants/:restaurantName/callLog/:callId", async (re
 })
 
 
+// *******************      ** ORDER MODEL **                 ************************************
+// app.post()
 
-const port = 3000;  
+
+const port = process.env.PORT || 3000;  
 app.listen(port, () => { 
     console.log(`App is running on the port ${port}`)       
 }) 
 
 /*
-
+ 
     try
     {
         res.status(200).json({ 
