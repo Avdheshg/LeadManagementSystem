@@ -2,6 +2,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const Lead = require('./models/leadModel');
+const CallLog = require('./models/callLogModel')
 
 // const mongoConnectionString = `mongodb+srv://avdeshg804:CUBfPpehDzPWPWJL@cluster0.a97ew.mongodb.net/?retryWrites=true&w=majority&appName=LeadManagement`;     CUBfPpehDzPWPWJL     AeJhPGLYb4nRn0zu
 // const mongoConnectionString = `mongodb+srv://avdeshg804:CUBfPpehDzPWPWJL@cluster0.a97ew.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -58,29 +59,29 @@ app.post("/api/v1/leads/restaurants/newRestaurant", async (req, res) => {
 app.post("/api/v1/leads/restaurants/createAll", async (req, res) => {
     try
     {
-    console.log(typeof req.body);
-    // const restaurantList = JSON.parse(req.body); 
-    const restaurantList = req.body;
+        const restaurantList = req.body;
 
-    for (var i = 0; i < restaurantList.length; i++)
-    {
-        var currRestaurant = restaurantList[i];    
-        restaurantList[i].leadDate = new Date(restaurantList[i].leadDate)
-    }
-
-    const restaurantCreated = await Lead.insertMany(restaurantList);
-
-    res.status(200).json({
-        status: "success", 
-        length: restaurantList.length,
-        data: {
-            restaurantList
+        for (var i = 0; i < restaurantList.length; i++)
+        {
+            restaurantList[i].leadDate = new Date(restaurantList[i].leadDate)
         }
-    })
+
+        const restaurantCreated = await Lead.insertMany(restaurantList);
+
+        res.status(200).json({
+            status: "success", 
+            length: restaurantList.length,
+            data: {
+                restaurantList
+            }
+        })
     }
     catch (err)
     {
-        console.log(err);
+        res.status(404).json({
+            status: 'fail',
+            message: err.message
+        });
     }
 })
 
@@ -252,13 +253,21 @@ app.patch("/api/v1/leads/restaurants/:restaurantName/pointOfContact/:pocId", asy
         const fieldsToUpdate = {};
 
         if (role) fieldsToUpdate["pointOfContact.$.role"] = role; 
-        if (email) fieldsToUpdate["fieldsToUpdate.$.email"] = email;
+        if (email) fieldsToUpdate["pointOfContact.$.email"] = email;
 
         const updatedRestaurant = await Lead.findOneAndUpdate(
             {leadName: restaurantName, "pointOfContact._id": pocId}, 
             {$set: fieldsToUpdate},
             {new: true}
         )
+
+        if (updatedRestaurant === null) 
+        {
+            res.status(404).json({
+                status: 'fail',
+                message: 'No Restaurant found for the given input!'
+            });
+        }
 
         res.status(200).json({
             status: "success",
@@ -315,18 +324,163 @@ app.delete("/api/v1/leads/restaurants/:restaurantName/pointOfContact/:pocId", as
 
 })
 
-// *******************      ** CALLS **                 ************************************
+// *******************      ** CALLS LOGS **                 ************************************
+app.post("/api/v1/leads/restaurants/callLog/createAll", async (req, res) => { 
+
+    try   
+    {      
+        const callLogs = req.body;
+
+        for (var i = 0; i < callLogs.length; i++)
+        {  
+            callLogs[i].dateTime = new Date(callLogs[i].dateTime)
+        }
+
+        const callLogsCreated = await CallLog.insertMany(callLogs);
+
+        res.status(200).json({ 
+            status: "success", 
+            length: callLogsCreated.length, 
+            data: {
+                callLogsCreated
+            }
+        })
+    }
+    catch (err)
+    {
+        res.status(404).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
+
+})
+
+app.delete("/api/v1/leads/restaurants/callLog/deleteAll", async (req, res) => {
+    try
+    {
+        const deletedLogs = await CallLog.deleteMany({});
+
+        res.status(200).json({ 
+            status: "success",  
+            data: {
+                deletedLogs
+            }
+        })
+
+    }
+    catch (err)
+    {
+        res.status(404).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
+})
+
+// Add a call for a POC
+app.post("/api/v1/leads/restaurants/:restaurantName/callLog/:pocId", async (req, res) => {
+    try
+    {
+        const { leadName, dateTime, agenda, comments } = req.body;
+        const { restaurantName, pocId } = req.params;
+
+        const addedCall = await CallLog.create({leadName, dateTime: new Date(dateTime), agenda, comments});
+
+        res.status(201).json({ 
+            status: "success", 
+            data: {
+                addedCall
+            }
+        })
+    }
+    catch (err)
+    {
+        res.status(404).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
+})
+
+app.patch("/api/v1/leads/restaurants/:restaurantName/callLog/:callId", async (req, res) => {
+    
+    try
+    {
+
+        let { dateTime, agenda, comments } = req.body;
+        const callId = req.params.callId;
+
+        const fieldsToUpdate = {}; 
+
+        if (dateTime) 
+        {
+            dateTime = new Date(dateTime);
+            fieldsToUpdate["dateTime"] = dateTime;  
+        }
+        if (agenda) fieldsToUpdate["agenda"] = agenda;
+        if (comments) fieldsToUpdate["comments"] = comments;
+
+        const updatedCallLog = await CallLog.findOneAndUpdate(
+            {_id: callId}, 
+            // {comments: comments},
+            {$set: fieldsToUpdate},
+            {new: true}
+        )
+
+        if (updatedCallLog === null) 
+        {
+            res.status(404).json({
+                status: 'fail',
+                message: 'No contact found for the given input!'
+            });
+        }
+
+        res.status(200).json({  
+            status: "success", 
+            data: {
+                updatedCallLog
+            }
+        })
+    }
+    catch (err)
+    {
+        res.status(404).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
+
+
+})
 
 
 
 const port = 3000;  
 app.listen(port, () => { 
     console.log(`App is running on the port ${port}`)       
-})
+}) 
 
 /*
 
-
-
+    try
+    {
+        res.status(200).json({ 
+            status: "success", 
+            data: {
+                callLogsCreated
+            }
+        })
+    }
+    catch (err)
+    {
+        res.status(404).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
 
 */
+
+
+

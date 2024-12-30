@@ -56,7 +56,8 @@ const leadSchema = new mongoose.Schema({
                 message: 'Invalid email address format',
             }
         }
-    }],
+    }]
+
 });
 
 const Lead = mongoose.model('Lead', leadSchema)   

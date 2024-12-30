@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 
 const callLogSchema = mongoose.Schema({
-    leadId: String,
+    leadName: String,
     pocId: String,
     dateTime: 
     {
@@ -18,7 +18,7 @@ const callLogSchema = mongoose.Schema({
     comments: String
 })
 
-const CallLog = mongoose.model('Call', callLogSchema)
+const CallLog = mongoose.model('CallLog', callLogSchema)
 
-module.exports = Call;
+module.exports = CallLog;
 
