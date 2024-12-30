@@ -6,12 +6,14 @@ const orderSchema = mongoose.Schema({
     name: 
     {
         type: String,
+        required: [true, 'A order must have a name'],
         unique: true,
     },
     category: 
     {
         type: String,
-        default: "Kitchen applicances"
+        default: "Kitchen applicances",
+        enum: ["Clothing", "Electronics", "Kitchen applicances"]
     },
     count: 
     {
@@ -22,7 +24,7 @@ const orderSchema = mongoose.Schema({
     dateTime: 
     {
         type: Date,
-        default: Date.now
+        min: [Date.now, 'A date cannot be less than current date']
     },
     details: String
 });

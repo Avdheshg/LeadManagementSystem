@@ -6,7 +6,7 @@ dotenv.config({ path: './config.env' });
  
 const Lead = require('./models/leadModel');
 const CallLog = require('./models/callLogModel');
-const OrderModel = require("./models/orderModel");
+const Order = require("./models/orderModel");
 
 const DB = process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD);
 mongoose.connect(DB, {
@@ -461,8 +461,160 @@ app.patch("/api/v1/leads/restaurants/:restaurantName/callLog/:callId", async (re
 
 
 // *******************      ** ORDER MODEL **                 ************************************
-// app.post()
+app.post("/api/v1/leads/restaurants/orders/createAll", async (req, res) => { 
+    try
+    {
+        const orderToCreate = req.body;
 
+        const createdOrders = await Order.insertMany(orderToCreate);
+
+        res.status(200).json({ 
+            status: "success", 
+            length: createdOrders.length,
+            data: {
+                createdOrders
+            }
+        })
+    }
+    catch (err)
+    {
+        res.status(404).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
+})
+
+app.post("/api/v1/leads/restaurants/:restaurantName/orders", async (req, res) => {
+    try
+    {
+
+        const { name, category, count, dateTime, details } = req.body;
+        const restaurantName = req.params.restaurantName;
+
+        const newOrder = await Order.create({leadName: restaurantName, name, category, count, dateTime, details});
+
+        res.status(200).json({ 
+            status: "success", 
+            data: {
+                newOrder
+            }
+        })
+    }
+    catch (err)
+    {
+        res.status(404).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
+})
+
+app.get("/api/v1/leads/restaurants/:restaurantName/orders/:orderId", async (req, res) => {
+    try
+    {
+        const orderId = req.params.orderId;
+
+        const foundOrder = await Order.findOne({_id: orderId});
+
+        if (foundOrder === null)
+        {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'No order present for the given id!!'
+            });
+        }
+ 
+        res.status(200).json({ 
+            status: "success", 
+            data: {
+                foundOrder
+            }
+        })
+    }
+    catch (err)
+    {
+        res.status(404).json({   
+            status: 'fail',
+            message: err.message
+        });
+    }
+})
+
+app.patch("/api/v1/leads/restaurants/:restaurantName/orders/:orderId", async (req, res) => {
+    try
+    {
+        const { name, category, count, dateTime, details } = req.body;
+        const orderId = req.params.orderId;
+
+        const fieldsToUpdate = {};
+
+        if (name) fieldsToUpdate["name"] = name;
+        if (category) fieldsToUpdate["category"] = category;
+        if (count) fieldsToUpdate["count"] = count;
+        if (dateTime) fieldsToUpdate["dateTime"] = dateTime; 
+        if (details) fieldsToUpdate["details"] = details;
+
+        const updatedOrder = await Order.findOneAndUpdate(
+            {_id: orderId}, 
+            {$set: fieldsToUpdate},
+            {new: true}
+        ) 
+
+        if (updatedOrder === null)
+        {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'No order present for the given id'
+            });
+        }
+
+        res.status(200).json({ 
+            status: "success",  
+            data: {
+                updatedOrder
+            }
+        })
+    }
+    catch (err)
+    {
+        res.status(404).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
+})
+
+app.delete("/api/v1/leads/restaurants/:restaurantName/orders/:orderId", async (req, res) => {
+    try
+    {
+        const orderId = req.params.orderId;
+
+        const deletedOrder = await Order.findOneAndDelete({_id: orderId});
+        
+        if (deletedOrder === null)
+        {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'No order present for the given Id'
+            });
+        }
+
+        res.status(200).json({ 
+            status: "success", 
+            data: {
+                
+            }
+        })
+    }
+    catch (err)
+    {
+        res.status(404).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
+})
 
 const port = process.env.PORT || 3000;  
 app.listen(port, () => { 
@@ -489,6 +641,4 @@ app.listen(port, () => {
     }
 
 */
-
-
 
