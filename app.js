@@ -8,8 +8,6 @@ const Lead = require('./models/leadModel');
 const CallLog = require('./models/callLogModel');
 const OrderModel = require("./models/orderModel");
 
-// const mongoConnectionString = `mongodb+srv://avdeshg804:CUBfPpehDzPWPWJL@cluster0.a97ew.mongodb.net/?retryWrites=true&w=majority&appName=LeadManagement`;     CUBfPpehDzPWPWJL     AeJhPGLYb4nRn0zu
-// const mongoConnectionString = `mongodb+srv://avdeshg804:CUBfPpehDzPWPWJL@cluster0.a97ew.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 const DB = process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSWORD);
 mongoose.connect(DB, {
 })
