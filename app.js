@@ -27,45 +27,56 @@ app.use(express.json());
 // *******************      ** Restaurants **                 ************************************
 app.get("/api/v1/leads/restaurants", catchAsync(async (req, res, next) => {
     
-    const restaurants = req.body.params.retaurants;
-    const leadRestaurants = await Lead.find();
+    const restaurants = await Lead.find();
 
     res.status(200).json({
         status: "success",
-        length: leadRestaurants.length,
+        length: restaurants.length,
         data: {
-            leadRestaurants     
-        }
+            restaurants     
+        } 
     })
 }) )   
 
-app.post("/api/v1/leads/restaurants/newRestaurant", catchAsync(async (req, res, next) => {
-    
-    const restaurants = req.body.params.retaurants;
-    req.body.leadDate = new Date(req.body.leadDate);
-    console.log(req.body.leadDate);
-    
-    const leadCreated = await Lead.create(req.body);
-    
-    res.status(201).json({
-        status: "success",
+app.get("/api/v1/leads/restaurants/:restaurantName", catchAsync(async (req, res, next) => {
+
+    const restaurantName = req.params.restaurantName; 
+    const foundRestaurant = await Lead.findOne({leadName: restaurantName});
+
+    if (foundRestaurant === null) 
+    {
+        return next(new AppError(`No restaurant present for the name: ${restaurantName}`, 404));
+    }
+
+    res.status(200).json({
+        status: 'success',
         data: {
-            leadCreated   
-        }   
+            foundRestaurant
+        }
     })
 
-}) )
+}) );
 
-app.post("/api/v1/leads/restaurants/createAll", catchAsync(async (req, res, next) => {
+app.post("/api/v1/leads/restaurants", catchAsync(async (req, res, next) => {
     
     const restaurantList = req.body;
 
-    for (var i = 0; i < restaurantList.length; i++)
-    {
-        restaurantList[i].leadDate = new Date(restaurantList[i].leadDate)
-    }
+    let restaurantCreated;
 
-    const restaurantCreated = await Lead.insertMany(restaurantList);
+    if (Array.isArray(restaurantList) == false)
+    {
+        restaurantList.leadDate = new Date(restaurantList.leadDate);
+        restaurantCreated = await Lead.create(req.body)
+    }
+    else 
+    {
+        for (var i = 0; i < restaurantList.length; i++)
+        {
+            restaurantList[i].leadDate = new Date(restaurantList[i].leadDate)
+        }
+    
+        restaurantCreated = await Lead.insertMany(restaurantList);
+    }
 
     res.status(200).json({
         status: "success", 
@@ -76,7 +87,7 @@ app.post("/api/v1/leads/restaurants/createAll", catchAsync(async (req, res, next
     })
 }) )
 
-app.delete("/api/v1/leads/restaurants/deleteAll", catchAsync(async (req, res, next) => {
+app.delete("/api/v1/leads/restaurants", catchAsync(async (req, res, next) => {
     const deletedItems = await Lead.deleteMany({});
 
     res.status(200).json({
@@ -87,17 +98,13 @@ app.delete("/api/v1/leads/restaurants/deleteAll", catchAsync(async (req, res, ne
 }) )
 
 app.delete("/api/v1/leads/restaurants/:restaurantName", catchAsync(async (req, res, next) => { 
+
     const restaurantName = req.params.restaurantName;
-    const deletedItem = await Lead.deleteOne({leadName: restaurantName}); 
+    const deletedItem = await Lead.deleteOne({leadName: restaurantName});  
 
     if (deletedItem.deletedCount == 0)
     {
-        return res.status(404).json({
-            status: "fail",
-            data: {   
-                message: "No restaurant present for this name"
-            }
-        })
+        return next(new AppError(`No restaurant present for the name: ${restaurantName}`, 404));
     }
 
     res.status(200).json({
@@ -109,9 +116,8 @@ app.delete("/api/v1/leads/restaurants/:restaurantName", catchAsync(async (req, r
 }) );
 
 app.patch("/api/v1/leads/restaurants/:restaurantName", catchAsync(async (req, res, next) => {
-    const restaurantName = req.params.restaurantName;
 
-    // const restaurant = Lead.findOne({restaurantName});
+    const restaurantName = req.params.restaurantName;
 
     const totalOrdersPlaced = req.body.totalOrdersPlaced;
     const leadType = req.body.leadType;
@@ -120,6 +126,11 @@ app.patch("/api/v1/leads/restaurants/:restaurantName", catchAsync(async (req, re
         new: true
     })
 
+    if (updatedRestaurant === null)
+    {
+        return next(new AppError(`No restaurant present for the name: ${restaurantName}`, 404));
+    }
+
     res.status(200).json({
         status: 'success',
         data: {
@@ -127,17 +138,20 @@ app.patch("/api/v1/leads/restaurants/:restaurantName", catchAsync(async (req, re
         }
     }) 
 }) );
-// *******************       Restaurants                 ************************************
-
 
 // *******************      ** CONTACTS **                 ************************************
-// Getting all the contacts for the restaurant
-app.get("/api/v1/leads/restaurants/:restaurantName/pointOfContact", catchAsync(async (req, res, next) => {
-    
-    const leadName = req.params.restaurantName;
-    let restaurant = await Lead.findOne({leadName}); 
 
-    const contacts = restaurant.pointOfContact;
+app.get("/api/v1/leads/restaurants/:restaurantName/pointOfContacts", catchAsync(async (req, res, next) => {
+    
+    const restaurantName = req.params.restaurantName; 
+    let foundRestaurant = await Lead.findOne({leadName: restaurantName});   
+
+    if (foundRestaurant === null)
+    {
+        return next(new AppError(`No restaurant present for the name: ${restaurantName}`, 404));
+    }
+
+    const contacts = foundRestaurant.pointOfContact;
 
     res.status(200).json({
         status: "success",
@@ -148,7 +162,6 @@ app.get("/api/v1/leads/restaurants/:restaurantName/pointOfContact", catchAsync(a
     })
 }))
 
-// Adding a new POC for the restaurant
 app.post("/api/v1/leads/restaurants/:restaurantName/pointOfContact", catchAsync(async (req, res, next) => {
     
     const restaurantName = req.params.restaurantName; 
@@ -159,16 +172,13 @@ app.post("/api/v1/leads/restaurants/:restaurantName/pointOfContact", catchAsync(
         $or: [
             {"pointOfContact.name": name},
             {"pointOfContact.email": email},
-            {"pointOfContact.phone": phone}
+            {"pointOfContact.phone": phone} 
         ]
     })
 
     if (existingPOC.length !== 0)
     {
-        return res.status(404).json({ 
-            status: 'fail',
-            message: 'Either no restaurant present for this name or the entered contact already present for this restaurant. Cannot add.'
-        });   
+        return next(new AppError(`Cannot add! The entered contact already present for this restaurant.`, 404));
     }
 
     const updatedRestaurant = await Lead.findOneAndUpdate( 
@@ -203,17 +213,14 @@ app.patch("/api/v1/leads/restaurants/:restaurantName/pointOfContact/:pocId", cat
     if (email) fieldsToUpdate["pointOfContact.$.email"] = email;
 
     const updatedRestaurant = await Lead.findOneAndUpdate(
-        {leadName: restaurantName, "pointOfContact._id": pocId}, 
+        {leadName: restaurantName, "pointOfContact._id": pocId},
         {$set: fieldsToUpdate},
         {new: true}
     )
 
     if (updatedRestaurant === null) 
     {
-        res.status(404).json({
-            status: 'fail',
-            message: 'No Restaurant found for the given input!'
-        });
+        return next(new AppError(`No restaurant present for the name: ${restaurantName}`, 404));
     }
 
     res.status(200).json({
@@ -238,10 +245,7 @@ app.delete("/api/v1/leads/restaurants/:restaurantName/pointOfContact/:pocId", ca
 
     if (deletedContact === false)
     {
-        res.status(404).json({
-            status: 'fail',
-            message: 'No contact found for this Id'
-        });
+        return next(new AppError('No contact found for this Id', 404));
     }
 
     res.status(200).json({
@@ -253,16 +257,33 @@ app.delete("/api/v1/leads/restaurants/:restaurantName/pointOfContact/:pocId", ca
 }))
 
 // *******************      ** CALLS LOGS **                 ************************************
-app.post("/api/v1/leads/restaurants/callLog/createAll", catchAsync(async (req, res, next) => { 
+// createAll
+app.post("/api/v1/leads/callLogs", catchAsync(async (req, res, next) => { 
     
     const callLogs = req.body;
 
-    for (var i = 0; i < callLogs.length; i++)
-    {  
-        callLogs[i].dateTime = new Date(callLogs[i].dateTime)
-    }
+    let callLogsCreated;
 
-    const callLogsCreated = await CallLog.insertMany(callLogs);
+    if (Array.isArray(callLogs) === false)
+    {
+        callLogs.dateTime = new Date(callLogs.dateTime);
+        const { leadName, pocId, dateTime, agenda, comments } = req.body;
+
+        callLogsCreated = await CallLog.create({leadName, pocId, dateTime, agenda, comments});
+    }
+    else 
+    {
+        const filteredArray = [];
+        for (var i = 0; i < callLogs.length; i++)
+        {   
+            const { leadName, pocId, dateTime, agenda, comments } = callLogs[i];
+
+            filteredArray.push({leadName, pocId, dateTime, agenda, comments});
+            filteredArray[i].dateTime = new Date(callLogs[i].dateTime);
+        }
+        
+        callLogsCreated = await CallLog.insertMany(filteredArray);
+    }
 
     res.status(200).json({ 
         status: "success", 
@@ -273,34 +294,69 @@ app.post("/api/v1/leads/restaurants/callLog/createAll", catchAsync(async (req, r
     })
 }))
 
-app.delete("/api/v1/leads/restaurants/callLog/deleteAll", catchAsync(async (req, res, next) => {
+app.get("/api/v1/leads/callLogs", catchAsync(async (req, res, next) => {
+
+    const allCallLogsFound = await CallLog.find({});
+
+    res.status(200).json({
+        status: 'success',
+        length: allCallLogsFound.length,
+        data: {
+            allCallLogsFound
+        }
+    })
+
+}));
+
+app.get("/api/v1/leads/callLogs/:callLogId", catchAsync(async (req, res, next) => {
+
+    const foundLog = await CallLog.findOne({_id: req.params.callLogId});
+
+    if (foundLog === null)
+    {
+        return next(new AppError("No call is found with the given id", 404));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            foundLog
+        }
+    })
+
+}) )
+
+app.delete("/api/v1/leads/callLogs", catchAsync(async (req, res, next) => {
     
-    const deletedLogs = await CallLog.deleteMany({});
+    const deletedLogs = await CallLog.deleteMany({}); 
 
     res.status(200).json({ 
         status: "success",  
-        data: {
+        data: { 
             deletedLogs
         }
     })
 }))
 
-// Add a call for a POC
-app.post("/api/v1/leads/restaurants/:restaurantName/callLog/:pocId", catchAsync(async (req, res, next) => {
-    const { leadName, dateTime, agenda, comments } = req.body;
-    const { restaurantName, pocId } = req.params;
+app.delete("/api/v1/leads/callLogs/:callLogId", catchAsync(async (req, res, next) => {
 
-    const addedCall = await CallLog.create({leadName, dateTime: new Date(dateTime), agenda, comments});
+    const deletedCallLog = await CallLog.deleteOne({_id: req.params.callLogId});
 
-    res.status(201).json({ 
-        status: "success", 
+    if (deletedCallLog.deletedCount == 0)
+    {
+        return next(new AppError(`No restaurant present for the given Id`, 404));
+    }
+
+    res.status(200).json({
+        status: 'success',
         data: {
-            addedCall
+            deletedCallLog
         }
     })
-}))
 
-app.patch("/api/v1/leads/restaurants/:restaurantName/callLog/:callId", catchAsync(async (req, res, next) => {
+}) )
+
+app.patch("/api/v1/leads/callLogs/:callId", catchAsync(async (req, res, next) => {
     
     let { dateTime, agenda, comments } = req.body;
     const callId = req.params.callId;
@@ -309,9 +365,9 @@ app.patch("/api/v1/leads/restaurants/:restaurantName/callLog/:callId", catchAsyn
 
     if (dateTime) 
     {
-        dateTime = new Date(dateTime);
-        fieldsToUpdate["dateTime"] = dateTime;  
+        fieldsToUpdate["dateTime"] = new Date(dateTime);  
     }
+
     if (agenda) fieldsToUpdate["agenda"] = agenda;
     if (comments) fieldsToUpdate["comments"] = comments;
 
@@ -324,10 +380,7 @@ app.patch("/api/v1/leads/restaurants/:restaurantName/callLog/:callId", catchAsyn
 
     if (updatedCallLog === null) 
     {
-        res.status(404).json({
-            status: 'fail',
-            message: 'No contact found for the given input!'
-        });
+        return next(new AppError('No contact found for the given input!', 404));
     }
 
     res.status(200).json({  
@@ -340,11 +393,31 @@ app.patch("/api/v1/leads/restaurants/:restaurantName/callLog/:callId", catchAsyn
 
 
 // *******************      ** ORDER MODEL **                 ************************************
-app.post("/api/v1/leads/restaurants/orders/createAll", catchAsync(async (req, res, next) => { 
+app.post("/api/v1/leads/orders", catchAsync(async (req, res, next) => { 
     
-    const orderToCreate = req.body;
+    const ordersToCreate = req.body;
+    let newOrders;
 
-    const createdOrders = await Order.insertMany(orderToCreate);
+    if (Array.isArray(ordersToCreate) === false)
+    {
+        const { leadName, name, category, count, dateTime, details } = req.body;
+
+        newOrders = await Order.create({leadName, name, category, count, dateTime, details});
+    }
+    else 
+    {   
+        const filteredArray = [];
+
+        for (let i = 0; i < ordersToCreate.length; i++)
+        {
+            const { leadName, name, category, count, dateTime, details } = ordersToCreate[i];
+            
+            filteredArray.push({leadName, name, category, count, dateTime, details});
+            filteredArray[i].dateTime = new Date(dateTime);
+        }
+        
+        newOrders = await Order.insertMany(ordersToCreate);
+    }
 
     res.status(200).json({ 
         status: "success", 
@@ -355,22 +428,21 @@ app.post("/api/v1/leads/restaurants/orders/createAll", catchAsync(async (req, re
     })
 }))
 
-app.post("/api/v1/leads/restaurants/:restaurantName/orders", catchAsync(async (req, res, next) => {
-    
-    const { name, category, count, dateTime, details } = req.body;
-    const restaurantName = req.params.restaurantName;
+app.get("/api/v1/leads/orders", catchAsync(async (req, res, next) => {
 
-    const newOrder = await Order.create({leadName: restaurantName, name, category, count, dateTime, details});
+    const ordersFound = await Order.find({});
 
-    res.status(200).json({ 
-        status: "success", 
+    res.status(200).json({
+        status: 'success',
+        length: ordersFound.length,
         data: {
-            newOrder
+            ordersFound
         }
     })
-}))
 
-app.get("/api/v1/leads/restaurants/:restaurantName/orders/:orderId", catchAsync(async (req, res) => {
+}) )
+
+app.get("/api/v1/leads/orders/:orderId", catchAsync(async (req, res) => {
     
     const orderId = req.params.orderId;
 
@@ -378,10 +450,7 @@ app.get("/api/v1/leads/restaurants/:restaurantName/orders/:orderId", catchAsync(
 
     if (foundOrder === null)
     {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'No order present for the given id!!'
-        });
+        return next(new AppError('No order present for the given id!!', 404));
     }
 
     res.status(200).json({ 
@@ -392,7 +461,7 @@ app.get("/api/v1/leads/restaurants/:restaurantName/orders/:orderId", catchAsync(
     })
 }))
 
-app.patch("/api/v1/leads/restaurants/:restaurantName/orders/:orderId", catchAsync(async (req, res, next) => {
+app.patch("/api/v1/leads/orders/:orderId", catchAsync(async (req, res, next) => {
     
     const { name, category, count, dateTime, details } = req.body;
     const orderId = req.params.orderId;
@@ -413,10 +482,7 @@ app.patch("/api/v1/leads/restaurants/:restaurantName/orders/:orderId", catchAsyn
 
     if (updatedOrder === null)
     {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'No order present for the given id'
-        });
+        return next(new AppError('No order present for the given id', 404));
     }
 
     res.status(200).json({ 
@@ -424,10 +490,10 @@ app.patch("/api/v1/leads/restaurants/:restaurantName/orders/:orderId", catchAsyn
         data: {
             updatedOrder
         }
-    })
+    });
 }))
 
-app.delete("/api/v1/leads/restaurants/:restaurantName/orders/:orderId", catchAsync(async (req, res, next) => {
+app.delete("/api/v1/leads/orders/:orderId", catchAsync(async (req, res, next) => {
     
     const orderId = req.params.orderId;
 
@@ -435,18 +501,15 @@ app.delete("/api/v1/leads/restaurants/:restaurantName/orders/:orderId", catchAsy
     
     if (deletedOrder === null)
     {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'No order present for the given Id'
-        });
+        return next(new AppError('No order present for the given id', 404));
     }
 
     res.status(200).json({ 
         status: "success", 
         data: {
-            
+            deletedOrder
         }
-    })
+    });
 }))
 
 app.all("*", (req, res, next) => {
@@ -460,7 +523,7 @@ app.use((err, req, res, next) => {
 
     res.status(err.statusCode).json({
         status: err.status,  
-        message: err.message
+        message: err.message   
     })
 
 })
