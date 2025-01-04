@@ -16,7 +16,6 @@ const leadSchema = new mongoose.Schema({
         type: Number,
         min: [0, "Total orders can't be less than 0"]
     },
-    status: String, 
     leadType : 
     {
         type: String,
