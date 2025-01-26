@@ -5,6 +5,8 @@ class AppError extends Error
     {
         super(message);
 
+        console.log(`statusCode: ${statusCode}`);
+        
         this.statusCode = statusCode;
         this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
 
@@ -21,7 +23,7 @@ module.exports = AppError;
 
 
 
-
+  
 
 
  

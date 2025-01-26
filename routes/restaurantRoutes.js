@@ -13,9 +13,19 @@ router
 
 router
     .route("/:restaurantName")
-    .get(restaurantController.getARestaurant)
-    .delete(restaurantController.deleteARestaurant)
-    .patch(restaurantController.updateARestaurant)
+    .get(restaurantController.getRestaurant)
+    .delete(restaurantController.deleteRestaurant)
+    .patch(restaurantController.updateRestaurant)
+
+router
+    .route("/:restaurantName/pointOfContacts")
+    .get(restaurantController.getAllPOC)
+    .post(restaurantController.addPOC) 
+
+router
+    .route("/:restaurantName/pointOfContacts/:pocId")
+    .patch(restaurantController.updatePOC)
+    .delete(restaurantController.deletePOC)
 
 module.exports = router;
 

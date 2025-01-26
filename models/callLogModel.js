@@ -7,7 +7,7 @@ const callLogSchema = mongoose.Schema({
     dateTime: 
     {
         type: Date, 
-        min: [Date.now, 'A date cannot be less than current date']
+        // min: [Date.now, 'A date cannot be less than current date']
     },
     agenda: 
     {
