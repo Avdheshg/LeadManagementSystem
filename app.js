@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config({ path: './config.env' });
+const path = require('path');
  
 const Lead = require('./models/leadModel');
 const CallLog = require('./models/callLogModel');
@@ -25,6 +26,8 @@ mongoose.connect(DB, {
 const app = express();
 app.use(express.json());
 
+app.set("view engine", "pug");
+app.use(express.static(path.join(__dirname, 'public')));
 
 // console.log(process.env);
 

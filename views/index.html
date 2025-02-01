@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Management System</title>
+    
+    <link rel="stylesheet" href="/public/css/style.css">
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+
+</head>
+
+
+<body>
+    <!-- Main Dashboard -->
+    <div class="dashboard">
+        <header class="header">
+            <div class="logo">LMS</div>
+            <input type="text" class="search-bar" placeholder="Search...">
+            <div class="user-profile">
+                <img src="profile.jpg" alt="User Profile">
+                <div class="dropdown">
+                    <a href="#">Settings</a>
+                    <a href="#">Profile</a>
+                    <a href="#">Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <aside class="sidebar">
+            <nav>
+                <ul>
+                    <li><a href="#">Dashboard</a></li>
+                    <li><a href="#">Leads</a></li>
+                    <li><a href="#">Accounts</a></li>
+                    <li><a href="#">Contacts</a></li>
+                    <li><a href="#">Reports</a></li>
+                    <li><a href="#">Settings</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <div class="overview">
+                <div class="card">Total Leads: 120</div>
+                <div class="card">Active Leads: 45</div>
+                <div class="card">Won Deals: 30</div>
+                <div class="card">Pending Follow-ups: 20</div>
+            </div>
+            <div class="activity-feed">
+                <h2>Recent Activities</h2>
+                <ul>
+                    <li>Called John Doe</li>
+                    <li>Added note for Lead XYZ</li>
+                    <li>Scheduled meeting with Acme Corp</li>
+                </ul>
+            </div>
+
+
+            <!-- Leads Page -->
+            <div class="leads-page">
+                <header class="toolbar">
+                    <button class="btn" onclick="openAddNewLeadPopup()">Add New Lead</button>
+                    <select class="filter">
+                        <option>Stage</option>
+                        <option>Source</option>
+                        <option>Owner</option>
+                    </select>
+                    <button class="btn">Sort</button>
+                </header>
+
+                <table class="leads-table">
+                    <thead>
+                        <tr>
+                            <th>Lead Name</th>
+                            <th>Company</th>
+                            <th>Contact</th>
+                            <th>Source</th>
+                            <th>Status</th>
+                            <th>Assigned To</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Doe</td>
+                            <td>Acme Corp</td>
+                            <td>john.doe@example.com</td>
+                            <td>Email</td>
+                            <td>New</td>
+                            <td>Jane Smith</td>
+                            <td><button>Edit</button> <button>Delete</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Lead Details Page -->
+            <div class="lead-details">
+                <div class="tabs">
+                    <button class="tab">Overview</button>
+                    <button class="tab">Activities</button>
+                    <button class="tab">Files</button>
+                    <button class="tab">History</button>
+                </div>
+
+                <div class="details-content">
+                    <div class="lead-info">
+                        <h3>John Doe</h3>
+                        <p>Company: Acme Corp</p>
+                        <p>Email: john.doe@example.com</p>
+                        <p>Status: New</p>
+                    </div>
+                    <div class="activity-timeline">
+                        <h3>Activity Timeline</h3>
+                        <ul>
+                            <li>Contacted on 01/01/2025</li>
+                            <li>Email sent on 01/02/2025</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Page -->
+            <div class="reports-page">
+                <header class="toolbar">
+                    <select class="filter">
+                        <option>Time Period</option>
+                        <option>Lead Status</option>
+                        <option>Owner</option>
+                    </select>
+                    <button class="btn">Export</button>
+                </header>
+
+                <div class="charts">
+                    <div class="chart">Sales Funnel</div>
+                    <div class="chart">Conversion Rate</div>
+                    <div class="chart">Performance Over Time</div>
+                </div>
+            </div>
+
+            <!-- Add New Lead Popup -->
+            <!-- Overlay -->
+            <div id="overlay" class="overlay" onclick="closeAddNewLeadPopup()"></div>
+            <div id="AddNewLeadPopup" class="AddNewLeadPopup">
+                <h2>Add New Lead</h2>
+                <input type="text" placeholder="Lead Name" required>
+                <input type="text" placeholder="Address">
+                <input type="date" placeholder="Lead Date">
+                <select>
+                    <option value="HOT">HOT</option>
+                    <option value="WARM">WARM</option>
+                    <option value="COLD">COLD</option>
+                </select>
+                <input type="number" placeholder="Total Orders Placed" min="0">
+                <button>Add Lead</button>
+                <button class="close" onclick="closeAddNewLeadPopup()">Close</button>
+            </div>
+
+        </main>
+    </div>
+
+</body>
+
+<script>
+
+    const addNewLeadPopup = document.getElementById("AddNewLeadPopup");
+
+    function openAddNewLeadPopup() {
+        addNewLeadPopup.style.display = "block";
+        document.getElementById("overlay").style.display = "block";
+    }
+
+    function closeAddNewLeadPopup() {
+        addNewLeadPopup.style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+    }
+
+</script>
+
+</html>
