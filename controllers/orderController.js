@@ -164,7 +164,7 @@ exports.updateOrder = catchAsync(async (req,res, next) => {
         status: 'success',
         date: {
             updatedOrder
-        }
+        } 
     })
 });
 

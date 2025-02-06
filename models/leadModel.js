@@ -11,21 +11,23 @@ const leadSchema = new mongoose.Schema({
     },
     address: String,
     leadDate: Date,
-    totalOrdersPlaced: 
+    totalOrdersPlaced:  
     {
         type: Number,
         min: [0, "Total orders can't be less than 0"]
-    },
+    }, 
     leadType : 
     {
         type: String,
         default: "HOT",
         enum: ['HOT', 'WARM', 'COLD'], 
     },
+    source: String,
+    assignedTo: String,
 
-    pointOfContact: 
+    pointOfContact:        
     [{
-        name: 
+        name:  
         {
             type: String,
             required: [true, 'Point of contact must have a name']

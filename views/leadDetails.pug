@@ -1,0 +1,279 @@
+mixin getDate(date)
+  
+  const currDayNumber = date.getDate();
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+
+  return `${currDayNumber} ${month} ${year}`;
+  
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Lead Management Dashboard
+    style.
+      :root {
+          --primary-color: #007bff;
+          --secondary-color: #0056b3;
+          --background-color: #f8f9fa;
+          --border-color: #ddd;
+          --text-color: #333;
+          --danger-color: red;
+          --icon-HOT: "🔥";
+          --icon-WARM: "🌤️";
+          --icon-COLD: "❄️";
+      }
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+      body {
+          font-family: 'Arial', sans-serif;
+          background-color: var(--background-color);
+          color: var(--text-color);
+          line-height: 1.6;
+      }
+      .dashboard {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          padding: 20px;
+          max-width: 1400px;
+          margin: 0 auto;
+      }
+      .lead-overview {
+          grid-column: 1 / 3;
+          display: grid;
+          grid-template-columns: 2fr repeat(3, 1fr);
+          gap: 15px;
+          background-color: white;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+          padding: 20px;
+      }
+      .lead-name-section {
+          grid-column: 1 / 2;
+          grid-row: 1 / 3;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          background-color: var(--primary-color);
+          color: white;
+          border-radius: 6px;
+          padding: 20px;
+          text-align: center;
+      }
+      .lead-name-section .overview-value {
+          font-size: 1.8rem;
+          font-weight: bold;
+      }
+      .overview-section {
+          display: flex;
+          flex-direction: column;
+          background-color: var(--background-color);
+          border-radius: 6px;
+          padding: 15px;
+          border: 1px solid var(--border-color);
+      }
+      .overview-section h3 {
+          color: var(--primary-color);
+          margin-bottom: 10px;
+          font-size: 1rem;
+          border-bottom: 2px solid var(--primary-color);
+          padding-bottom: 5px;
+      }
+      .overview-content {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+      .overview-value {
+          font-size: 1rem;
+          font-weight: bold;
+          word-break: break-word;
+      }
+      .overview-icon {
+          color: var(--primary-color);
+          font-size: 1.5rem;
+      }
+      .lead-type-HOT { color: var(--danger-color); }
+      .lead-type-WARM { color: orange; }
+      .lead-type-COLD { color: blue; }
+      .card {
+          background: white;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+          padding: 20px;
+      }
+      .table-responsive {
+          overflow-x: auto;
+      }
+      table {
+          width: 100%;
+          border-collapse: collapse;
+      }
+      th, td {
+          border: 1px solid var(--border-color);
+          padding: 12px;
+          text-align: left;
+      }
+      th {
+          background-color: var(--primary-color);
+          color: white;
+      }
+      .btn {
+          display: inline-block;
+          padding: 6px 12px;
+          border-radius: 4px;
+          text-decoration: none;
+          cursor: pointer;
+          transition: all 0.3s ease;
+      }
+      .btn-edit {
+          background-color: var(--primary-color);
+          color: white;
+          border: 1px solid var(--primary-color);
+      }
+      .btn-delete {
+          background-color: var(--danger-color);
+          color: white;
+          border: 1px solid var(--danger-color);
+      }
+      .btn:hover {
+          opacity: 0.8;
+      }
+      @media (max-width: 768px) {
+          .dashboard, .lead-overview {
+              grid-template-columns: 1fr;
+          }
+      }
+      /* Photo frame for contact images in the Points of Contact table */
+      .contact-photo {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+          margin-right: 10px;
+      }
+      .contact-name {
+          display: flex;
+          align-items: center;
+      }
+
+      /* Base icon styling */
+      .icon {
+        font-size: 2rem;
+        margin-right: 0.5em;
+        vertical-align: middle;
+      }
+
+      /* Specific icon classes */
+      .icon-HOT::before {
+        content: "🔥";
+        color: red;
+      }
+
+      .icon-WARM::before {
+        content: "🌤️";
+        color: orange;
+      }
+
+      .icon-COLD::before {
+        content: "❄️";
+        color: blue;
+      }
+
+
+
+
+  body
+    .dashboard
+      .lead-overview
+        .lead-name-section
+          .overview-icon 🏢
+          .overview-value= `${foundRestaurant.leadName}`
+        .overview-section
+          h3 Lead Type
+          .overview-content
+            - const leadType = foundRestaurant.leadType
+            .overview-value(class=`lead-type-${leadType}`)= `${leadType}`
+            .overview-icon(class=`icon-${leadType}`)
+        .overview-section
+          h3 Address
+          .overview-content
+            .overview-value= `${foundRestaurant.address}`
+            .overview-icon 📍
+        .overview-section
+          h3 Lead Date
+          .overview-content
+            - const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+            - const currDate = `${foundRestaurant.leadDate.getDate()} ${monthNames[foundRestaurant.leadDate.getMonth()]} ${foundRestaurant.leadDate.getFullYear()}`;
+            .overview-value= `${currDate}`
+            .overview-icon 📅
+        .overview-section
+          h3 Source
+          .overview-content
+            .overview-value= `${foundRestaurant.source}`
+            .overview-icon 🔗
+        .overview-section
+          h3 Assigned To
+          .overview-content
+            .overview-value= `${foundRestaurant.assignedTo}`
+            .overview-icon 👤
+        .overview-section
+          h3 Total Orders
+          .overview-content
+            .overview-value= `${foundRestaurant.totalOrdersPlaced}`
+            .overview-icon 📦
+      .card(style="grid-column: 1 / 3;")
+        h2(style="color: var(--primary-color); margin-bottom: 15px;") Points of Contact
+        .table-responsive
+          table
+            thead
+              tr
+                th Name
+                th Role
+                th Phone
+                th Email
+                th Actions
+
+            each poc in foundRestaurant.pointOfContact
+              tbody
+                tr
+                  td.contact-name
+                    img.contact-photo(src="", alt="John Doe")
+                    = `${poc.name}`
+                  td= `${poc.role}`
+                  td= `${poc.phone}`
+                  td= `${poc.email}`
+                  td
+                    button.btn.btn-edit Edit
+                    button.btn.btn-delete Delete
+                    
+      .card(style="grid-column: 1 / 3;")
+        h2(style="color: var(--primary-color); margin-bottom: 15px;") Orders Placed
+        .table-responsive
+          table
+            thead
+              tr
+                th Order Name
+                th Category
+                th Count
+                th Date
+                th Details
+                th Actions
+            each order in ordersPlaced
+              - const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+              - const currDate = `${order.dateTime.getDate()} ${monthNames[order.dateTime.getMonth()]} ${order.dateTime.getFullYear()}`;
+              tbody
+                tr
+                  td= `${order.name}`
+                  td= `${order.category}`
+                  td= `${order.count}`
+                  td= `${currDate}`
+                  td= `${order.details}`
+                  td
+                    button.btn.btn-edit Edit
+                    button.btn.btn-delete Delete

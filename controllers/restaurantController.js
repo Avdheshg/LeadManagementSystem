@@ -1,10 +1,10 @@
 
-const catchAsync = require("./../utils/catchAsync");
+const catchAsync = require("../utils/catchAsync")
 const Lead = require("./../models/leadModel");
 const AppError = require("./../utils/appError");
 const Logger = require("./../utils/Logger");
 
-exports.getAllRestaurants = catchAsync(async (req, res, next) => {
+exports.getAllRestaurants = (async (req, res, next) => {
     
     Logger.Info("** Inside getAllRestaurants ** ");
     const restaurants = await Lead.find();
@@ -20,36 +20,40 @@ exports.getAllRestaurants = catchAsync(async (req, res, next) => {
 
 exports.createNewRestaurants = catchAsync(async (req, res, next) => {
     
-    Logger.Info("** Inside createNewRestaurants ** ");
-    const restaurantList = req.body;
-
-    let restaurantCreated;
-
-    if (Array.isArray(restaurantList) == false)
-    {
-        restaurantList.leadDate = new Date(restaurantList.leadDate);
-        restaurantCreated = await Lead.create(req.body)
-    }
-    else 
-    {
-        for (var i = 0; i < restaurantList.length; i++)
+    
+        Logger.Info("** Inside createNewRestaurants ** ");
+        const restaurantList = req.body;
+    
+        let restaurantCreated;
+    
+        if (Array.isArray(restaurantList) == false)
         {
-            restaurantList[i].leadDate = new Date(restaurantList[i].leadDate)
+            restaurantList.leadDate = new Date(restaurantList.leadDate);
+            restaurantCreated = await Lead.create(req.body)
+        }
+        else 
+        {
+            for (var i = 0; i < restaurantList.length; i++)
+            {
+                restaurantList[i].leadDate = new Date(restaurantList[i].leadDate)
+            }
+        
+            restaurantCreated = await Lead.insertMany(restaurantList);
         }
     
-        restaurantCreated = await Lead.insertMany(restaurantList);
-    }
+        res.status(200).json({
+            status: "success", 
+            length: restaurantList.length,
+            data: {
+                restaurantList
+            }
+        })
 
-    res.status(200).json({
-        status: "success", 
-        length: restaurantList.length,
-        data: {
-            restaurantList
-        }
-    })
+    
+    
 }); 
 
-exports.deleteAllRestaurants = catchAsync(async (req, res, next) => {
+exports.deleteAllRestaurants = (async (req, res, next) => {
 
     Logger.Info("** Inside deleteAllRestaurants ** ");
     const deletedItems = await Lead.deleteMany({});
@@ -60,7 +64,7 @@ exports.deleteAllRestaurants = catchAsync(async (req, res, next) => {
     })  
 })
 
-exports.getRestaurant = catchAsync(async (req, res, next) => {
+exports.getRestaurant = (async (req, res, next) => {
 
     Logger.Info("** Inside getRestaurant ** ");
     const restaurantName = req.params.restaurantName; 
@@ -80,7 +84,7 @@ exports.getRestaurant = catchAsync(async (req, res, next) => {
 
 })
 
-exports.deleteRestaurant = catchAsync(async (req, res, next) => { 
+exports.deleteRestaurant = (async (req, res, next) => { 
 
     Logger.Info("** Inside deleteRestaurant ** ");
     const restaurantName = req.params.restaurantName;
@@ -99,7 +103,7 @@ exports.deleteRestaurant = catchAsync(async (req, res, next) => {
     })
 })
 
-exports.updateRestaurant = catchAsync(async (req, res, next) => {
+exports.updateRestaurant = (async (req, res, next) => {
 
     Logger.Info("** Inside updateRestaurant ** ");
     const restaurantName = req.params.restaurantName;
@@ -131,7 +135,7 @@ exports.updateRestaurant = catchAsync(async (req, res, next) => {
 
 // *******************      ** CONTACTS **                 ************************************
 
-exports.getAllPOC = catchAsync(async (req, res, next) => { 
+exports.getAllPOC = (async (req, res, next) => { 
      
     Logger.Info("** Inside getAllPOC ** ");
     const restaurantName = req.params.restaurantName;   
@@ -153,7 +157,7 @@ exports.getAllPOC = catchAsync(async (req, res, next) => {
     })
 });
 
-exports.addPOC = catchAsync(async (req, res, next) => { 
+exports.addPOC = (async (req, res, next) => { 
     
     Logger.Info("** Inside addPOC ** ");
     const restaurantName = req.params.restaurantName; 
@@ -193,7 +197,7 @@ exports.addPOC = catchAsync(async (req, res, next) => {
     });
 })
 
-exports.updatePOC = catchAsync(async (req, res, next) => {
+exports.updatePOC = (async (req, res, next) => {
     
     Logger.Info("** Inside updatePOC ** ");
     const { restaurantName, pocId } = req.params;
@@ -223,7 +227,7 @@ exports.updatePOC = catchAsync(async (req, res, next) => {
     })
 })
 
-exports.deletePOC = catchAsync(async (req, res, next) => {
+exports.deletePOC = (async (req, res, next) => {
     
     Logger.Info("** Inside deletePOC ** ");
     const { restaurantName, pocId } = req.params;

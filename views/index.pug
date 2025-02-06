@@ -1,0 +1,166 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Lead Management System
+    link(rel="stylesheet" href="css/style.css")
+
+  body
+  .dashboard
+    header.header
+      .logo LMS
+      input.search-bar(type="text" placeholder="Search...")
+      .user-profile
+        img(src="profile.jpg" alt="User Profile")
+        .dropdown
+          a(href="#") Settings
+          a(href="#") Profile
+          a(href="#") Logout
+    aside.sidebar
+      nav
+        ul
+          li: a(href="#") Dashboard
+          li: a(href="#") Leads
+          li: a(href="#") Accounts
+          li: a(href="#") Contacts
+          li: a(href="#") Reports
+          li: a(href="#") Settings
+    main.content
+      .overview
+        .card Total Leads: 120
+        .card Active Leads: 45
+        .card Won Deals: 30
+        .card Pending Follow-ups: 20
+      .activity-feed
+        h2 Recent Activities
+        ul
+          li Called John Doe
+          li Added note for Lead XYZ
+          li Scheduled meeting with Acme Corp
+      .leads-page
+        header.toolbar
+          button.btn(onclick="openAddNewLeadPopup()") Add New Lead
+          select.filter
+            option Stage
+            option Source
+            option Owner
+          button.btn Sort
+
+        
+        table.leads-table
+          thead
+            tr
+              th Lead Name
+              th Lead Date
+              th Contact
+              th Lead Type
+              th Source
+              th Assigned To
+              th Actions
+
+          each lead in leads
+            tbody
+              tr
+                td
+                  a.leadNameHeader(href=`/leads/${lead.leadName}`)= `${lead.leadName}`
+                td= `${lead.leadDate.toLocaleDateString('de-DE')}`
+                td= `${lead.pointOfContact[0].email}`
+                td= `${lead.leadType}`
+                td= `${lead.source}`
+                td= `${lead.assignedTo}`
+                td
+                  button Edit
+                  button Delete
+
+        // These should be the part of the details of an individual lead
+      //- .lead-details
+      //-   .tabs
+      //-     button.tab Overview
+      //-     button.tab Activities
+      //-     button.tab Files
+      //-     button.tab History
+      //-   .details-content
+      //-     .lead-info
+      //-       h3 John Doe
+      //-       p Company: Acme Corp
+      //-       p Email: john.doe@example.com
+      //-       p Status: New
+      //-     .activity-timeline
+      //-       h3 Activity Timeline
+      //-       ul
+      //-         li Contacted on 01/01/2025
+      //-         li Email sent on 01/02/2025
+      //- .reports-page
+      //-   header.toolbar
+      //-     select.filter
+      //-       option Time Period
+      //-       option Lead Status
+      //-       option Owner
+      //-     button.btn Export
+      //-   .charts
+      //-     .chart Sales Funnel
+      //-     .chart Conversion Rate
+      //-     .chart Performance Over Time
+
+
+      #overlay.overlay(onclick="closeAddNewLeadPopup()")
+      form#AddNewLeadPopup.AddNewLeadPopup
+        .addNewLeadPopupContainer
+          h2 Add New Lead
+          .column
+            // Existing Lead Fields
+            input#leadName(type="text" placeholder="Lead Name" required value="EcoWave Technologies") 
+            input#leadAddress(type="text" placeholder="Address" value="654 Greenway Avenue, Portland") 
+            input#leadDate(type="date" placeholder="Lead Date" value="2023-11-30") 
+            select#leadType
+              option(value="HOT" selected) HOT
+              option(value="WARM") WARM
+              option(value="COLD") COLD
+            input#totalOrdersPlaced(type="number" placeholder="Total Orders Placed" min="0" value="10") 
+          
+          // New Fields
+          .column
+            select#source
+              option(selected disabled) Source
+              option(value="Phone") Phone
+              option(value="Email") Email
+            select#assignedTo
+              option(selected disabled) Assigned To
+              option(value="Alice Johnson") Alice Johnson
+              option(value="Bob Smith") Bob Smith
+              option(value="Charlie Davis") Charlie Davis
+              option(value="Diana Prince") Diana Prince
+              option(value="Ethan Hunt") Ethan Hunt
+              option(value="Fiona Apple") Fiona Apple
+              option(value="George Clooney") George Clooney
+              option(value="Hannah Montana") Hannah Montana
+              option(value="Ian Somerhalder") Ian Somerhalder
+              option(value="Julia Roberts") Julia Roberts
+              option(value="Kevin Bacon") Kevin Bacon
+              option(value="Laura Linney") Laura Linney
+              option(value="Michael Jordan") Michael Jordan
+              option(value="Natalie Portman") Natalie Portman
+              option(value="Oscar Isaac") Oscar Isaac
+              option(value="Pamela Anderson") Pamela Anderson
+              option(value="Quentin Tarantino") Quentin Tarantino
+              option(value="Rachel McAdams") Rachel McAdams
+              option(value="Samuel L. Jackson") Samuel L. Jackson
+              option(value="Tina Fey") Tina Fey
+
+            // New Section for Point of Contact
+            .pointOfContactContainer
+              h3 Point of Contact
+              input#contactName(type="text" placeholder="Contact Name" required value="Ethan Davis")
+              input#contactRole(type="text" placeholder="Contact Role" required value="Business Development Manager")
+              input#contactPhone(type="number" placeholder="Contact Phone" required value="5566778899")
+              input#contactEmail(type="email" placeholder="Contact Email" required value="ethan.davis@ecowavetech.com")
+
+          button Add Lead 
+          button.close(type="button" onclick="closeAddNewLeadPopup()") Close
+
+
+  script(rel="" src="js/script.js")
+  script(rel="" src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.8/axios.min.js") 
+
+

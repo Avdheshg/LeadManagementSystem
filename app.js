@@ -12,6 +12,9 @@ const Order = require("./models/orderModel");
 const restaurantRoutes = require("./routes/restaurantRoutes");
 const callLogRoutes = require("./routes/callLogRoutes");
 const orderRoute = require("./routes/orderRoutes");
+const viewsRoute = require("./routes/viewsRoutes");
+
+const globalErrorHandler = require("./controllers/errorController");
 
 const AppError = require("./utils/appError");
 const catchAsync = require("./utils/catchAsync");
@@ -20,16 +23,21 @@ const DB = process.env.DATABASE.replace("<PASSWORD>", process.env.DATABASE_PASSW
 mongoose.connect(DB, {
 })
 .then(con => {
-    console.log('DB Conneciton Successful!...');  
+    console.log('DB Conneciton Successful!...');
 })     
  
 const app = express();
 app.use(express.json());
-
+ 
 app.set("view engine", "pug");
-app.use(express.static(path.join(__dirname, 'public')));
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public'))); 
+
+console.log((path.join(__dirname, 'public')))
 
 // console.log(process.env);
+
+app.use("/leads", viewsRoute)
 
 // *******************      ** Restaurants / POC **                 ************************************
 app.use("/api/v1/leads/restaurants", restaurantRoutes);
@@ -48,24 +56,14 @@ app.all("*", (req, res, next) => {
     next(new AppError(`Cannot find ${req.originalUrl} on this server!`, 404));
 })
 
-app.use((err, req, res, next) => {
-
-    err.statusCode = err.statusCode || 500; 
-    err.status = err.status || 'error'; 
-
-    res.status(err.statusCode).json({
-        status: err.status,  
-        message: err.message   
-    })
-
-})
-
+app.use(globalErrorHandler); 
+ 
 const port = process.env.PORT || 3000;  
 app.listen(port, () => { 
     console.log(`App is running on the port ${port}`)       
 }) 
 
-/*
+/*   
  
     try
     {

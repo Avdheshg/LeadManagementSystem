@@ -5,27 +5,17 @@ class AppError extends Error
     {
         super(message);
 
-        console.log(`statusCode: ${statusCode}`);
+        console.log(`Inside AppError.js: statusCode: ${statusCode}`);
         
         this.statusCode = statusCode;
         this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
-
+ 
         Error.captureStackTrace(this, this.contructor);
     }
 }
 
 module.exports = AppError;
-
-
-
-
-
-
-
-
-  
-
-
+ 
  
 
 
@@ -33,8 +23,7 @@ module.exports = AppError;
 
 
 
-
-
+  
 
 
 
