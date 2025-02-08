@@ -315,101 +315,87 @@
     </aside>
 
     <main class="content">
-        <h2 class="leadNameHeader">Lead: <a href="#">EcoWave Technologies</a></h2>
-        <div class="details-content">
-            <!-- Lead Details -->
-            <div class="lead-info">
-                <h3>Lead Details</h3>
-                <p><strong>Address:</strong> 654 Greenway Avenue, Portland</p>
-                <p><strong>Lead Date:</strong> 2023-11-30</p>
-                <p><strong>Lead Type:</strong> HOT</p>
-                <p><strong>Total Orders Placed:</strong> 10</p>
-            </div>
 
-
-            <!-- Points of Contact -->
-            <div class="points-of-contact">
-                <h3>Points of Contact</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Role</th>
-                            <th>Phone</th>
-                            <th>Email</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Ethan Davis</td>
-                            <td>Business Development Manager</td>
-                            <td>5566778899</td>
-                            <td>ethan.davis@ecowavetech.com</td>
-                            <td class="actions">
-                                <button class="edit-btn">Edit</button>
-                                <button class="delete-btn">Delete</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Sarah Johnson</td>
-                            <td>Sales Representative</td>
-                            <td>4455667788</td>
-                            <td>sarah.johnson@ecowavetech.com</td>
-                            <td class="actions">
-                                <button class="edit-btn">Edit</button>
-                                <button class="delete-btn">Delete</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            
+        <div id="overlay" class="overlay" onclick="closeAddNewLeadPopup()"></div>
+    <form id="AddNewLeadPopup" class="AddNewLeadPopup">
+      <div class="addNewLeadPopupContainer">
+        <!-- Using fallback value "Add New Lead" -->
+        <h2 id="AddNewLeadPopup__heading">Add New Lead</h2>
+        <div class="column">
+          <!-- Existing Lead Fields -->
+          <input id="leadName" type="text" placeholder="Lead Name" required value="EcoWave Technologies">
+          <input id="leadAddress" type="text" placeholder="Address" value="654 Greenway Avenue, Portland">
+          <input id="leadDate" type="date" placeholder="Lead Date" value="30-11-2023" min="1997-01-01" max="2030-12-31">
+          <select id="leadType">
+            <option value="HOT" selected>HOT</option>
+            <option value="WARM">WARM</option>
+            <option value="COLD">COLD</option>
+          </select>
+          <input id="totalOrdersPlaced" type="number" placeholder="Total Orders Placed" min="0" value="10">
         </div>
-        <!-- Orders Placed History -->
-        <div class="activity-timeline">
-            <h3>Orders Placed History</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Order Name</th>
-                        <th>Category</th>
-                        <th>Count</th>
-                        <th>Date</th>
-                        <th>Details</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Smart Oven</td>
-                        <td>Kitchen Appliances</td>
-                        <td>2</td>
-                        <td>2024-01-15</td>
-                        <td>Advanced smart features</td>
-                        <td class="actions">
-                            <button class="edit-btn">Edit</button>
-                            <button class="delete-btn">Delete</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Bluetooth Speaker</td>
-                        <td>Electronics</td>
-                        <td>1</td>
-                        <td>2024-01-10</td>
-                        <td>Portable and waterproof</td>
-                        <td class="actions">
-                            <button class="edit-btn">Edit</button>
-                            <button class="delete-btn">Delete</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="column">
+          <select id="source">
+            <option selected disabled>Source</option>
+            <option value="Phone">Phone</option>
+            <option value="Email">Email</option>
+          </select>
+          <select id="assignedTo">
+            <option selected disabled>Assigned To</option>
+            <!-- Example assignedTo options; adjust as needed -->
+            <option value="Alice Johnson">Alice Johnson</option>
+            <option value="Bob Smith">Bob Smith</option>
+            <!-- More options can be added here -->
+          </select>
+          <!-- New Section for Point of Contact -->
+          <div class="pointOfContactContainer">
+            <h3>Point of Contact</h3>
+            <input id="contactName" type="text" placeholder="Contact Name" required value="Ethan Davis">
+            <input id="contactRole" type="text" placeholder="Contact Role" required value="Business Development Manager">
+            <input id="contactPhone" type="number" placeholder="Contact Phone" required value="5566778899">
+            <input id="contactEmail" type="email" placeholder="Contact Email" required value="ethan.davis@ecowavetech.com">
+          </div>
         </div>
+        <!-- Using fallback value "Edit" -->
+        <button>Edit</button>
+        <button class="close" type="button" onclick="closeAddNewLeadPopup()">Close</button>
+      </div>
+    </form>
 
     </main>
 
+    <script>
+        const lead = document.getElementById("AddNewLeadPopup");
+        let date = new Date();
+
+        // date = Date.parse(date);
+
+
+        console.log(date);
+
+        const opneAddOrEditLeadPopup = function(lead)
+        {
+            const headingNewText = document.getElementById("AddNewLeadPopup__heading").textContent = "New Lead";
+            console.log(headingNewText); 
+
+            fillAllElementValuesOfLeadPopup(allElementsOfLeadPopup, lead);
+
+            openAddNewLeadPopup();
+        }
+
+        const fillAllElementValuesOfLeadPopup = function(lead)
+        {
+            const leadDate = document.getElementById("leadDate").value = lead.leadDate;
+            const source = document.getElementById("source").value = lead.source;
+            
+            console.log(lead.leadDate, lead.source)
+            
+        }
+
+        
+        
+        opneAddOrEditLeadPopup(lead);
+
+    </script>
 
 </body>
 

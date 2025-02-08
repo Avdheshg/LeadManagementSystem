@@ -70,7 +70,7 @@ html(lang="en")
                 td= `${lead.source}`
                 td= `${lead.assignedTo}`
                 td
-                  button Edit
+                  button(onclick=`opneAddOrEditLeadPopup(${JSON.stringify(lead)})`) Edit
                   button Delete
 
         // These should be the part of the details of an individual lead
@@ -107,7 +107,7 @@ html(lang="en")
       #overlay.overlay(onclick="closeAddNewLeadPopup()")
       form#AddNewLeadPopup.AddNewLeadPopup
         .addNewLeadPopupContainer
-          h2 Add New Lead
+          h2#AddNewLeadPopup__heading Add New Lead
           .column
             // Existing Lead Fields
             input#leadName(type="text" placeholder="Lead Name" required value="EcoWave Technologies") 
@@ -127,26 +127,8 @@ html(lang="en")
               option(value="Email") Email
             select#assignedTo
               option(selected disabled) Assigned To
-              option(value="Alice Johnson") Alice Johnson
-              option(value="Bob Smith") Bob Smith
-              option(value="Charlie Davis") Charlie Davis
-              option(value="Diana Prince") Diana Prince
-              option(value="Ethan Hunt") Ethan Hunt
-              option(value="Fiona Apple") Fiona Apple
-              option(value="George Clooney") George Clooney
-              option(value="Hannah Montana") Hannah Montana
-              option(value="Ian Somerhalder") Ian Somerhalder
-              option(value="Julia Roberts") Julia Roberts
-              option(value="Kevin Bacon") Kevin Bacon
-              option(value="Laura Linney") Laura Linney
-              option(value="Michael Jordan") Michael Jordan
-              option(value="Natalie Portman") Natalie Portman
-              option(value="Oscar Isaac") Oscar Isaac
-              option(value="Pamela Anderson") Pamela Anderson
-              option(value="Quentin Tarantino") Quentin Tarantino
-              option(value="Rachel McAdams") Rachel McAdams
-              option(value="Samuel L. Jackson") Samuel L. Jackson
-              option(value="Tina Fey") Tina Fey
+              each assignee in assignedTo
+                 option(value=`${assignee}`)= `${assignee}`
 
             // New Section for Point of Contact
             .pointOfContactContainer
@@ -156,7 +138,7 @@ html(lang="en")
               input#contactPhone(type="number" placeholder="Contact Phone" required value="5566778899")
               input#contactEmail(type="email" placeholder="Contact Email" required value="ethan.davis@ecowavetech.com")
 
-          button Add Lead 
+          button#AddNewLeadPopup__editOrAddButton Add Lead 
           button.close(type="button" onclick="closeAddNewLeadPopup()") Close
 
 

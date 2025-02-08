@@ -22,14 +22,15 @@ exports.createNewRestaurants = catchAsync(async (req, res, next) => {
     
     
         Logger.Info("** Inside createNewRestaurants ** ");
-        const restaurantList = req.body;
-    
+        const restaurantList = req.body; 
+     
         let restaurantCreated;
     
         if (Array.isArray(restaurantList) == false)
         {
             restaurantList.leadDate = new Date(restaurantList.leadDate);
-            restaurantCreated = await Lead.create(req.body)
+            console.log(typeof restaurantList.leadDate, restaurantList.leadDate);
+            restaurantCreated = await Lead.create(req.body) 
         }
         else 
         {

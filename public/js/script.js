@@ -6,11 +6,43 @@ const showAlert = (alertMessage) =>
     window.setTimeout(() => {}, 2000);
 }
 
+
 const addNewLeadPopup = document.getElementById("AddNewLeadPopup");
 
+const fillDefaultValuesToLeadPopup = function()
+{   
+    console.log("** FRONTEND: Inside fillDefaultValuesToLeadPopup ** ");
+    
+    document.getElementById("leadName").value = "";
+    document.getElementById("leadAddress").value = "";  
+    document.getElementById("leadDate").value = "";
+    document.getElementById("leadType").value = "";
+    document.getElementById("totalOrdersPlaced").value = "";
+    document.getElementById("source").value = "";
+    document.getElementById("assignedTo").value = "";
+    
+    // poc
+    document.getElementById("contactName").value = "";
+    document.getElementById("contactRole").value = "";
+    document.getElementById("contactPhone").value = "";
+    document.getElementById("contactEmail").value = "";
+    
+}
+
 function openAddNewLeadPopup() {
-  addNewLeadPopup.style.display = "block";
-  document.getElementById("overlay").style.display = "block";
+    console.log("** FRONTEND: Inside openAddNewLeadPopup ** ");
+
+    document.getElementById("AddNewLeadPopup__heading").textContent = "Add Lead";
+    document.getElementById("AddNewLeadPopup__editOrAddButton").textContent = "Add Lead";
+    fillDefaultValuesToLeadPopup();
+    
+    makeAddOrEditLeadPopupVisible();
+}
+
+const makeAddOrEditLeadPopupVisible = function()
+{
+    addNewLeadPopup.style.display = "block";
+    document.getElementById("overlay").style.display = "block";
 }
 
 function closeAddNewLeadPopup() {
@@ -78,4 +110,52 @@ const createNewLeadFunction = async function(leadName, leadAddress, leadDate, le
         showAlert(`Error: ${err.response.data.message}`)
     }
     
+}
+
+const opneAddOrEditLeadPopup = function(lead)
+{
+    console.log("** FRONTEND: Inside opneAddOrEditLeadPopup ** ");
+
+    const textContent = document.getElementById("AddNewLeadPopup__heading").textContent = "Edit Lead";
+    console.log(document.getElementById("AddNewLeadPopup__heading"));
+    console.log(textContent);
+    document.getElementById("AddNewLeadPopup__editOrAddButton").textContent = "Save";
+
+    fillAllElementValuesOfLeadPopup(lead);
+   
+    makeAddOrEditLeadPopupVisible();
+}
+
+const fillAllElementValuesOfLeadPopup = function(lead)
+{   
+    console.log("** FRONTEND: Inside fillAllElementValuesOfLeadPopup ** "); 
+
+    let date = getFormattedDate(lead.leadDate);
+    console.log(lead.source);
+    document.getElementById("leadName").value = lead.leadName;
+    document.getElementById("leadAddress").value = lead.address;  
+    document.getElementById("leadDate").value = date;
+    document.getElementById("leadType").value = lead.leadType;
+    document.getElementById("totalOrdersPlaced").value = lead.totalOrdersPlaced;
+    document.getElementById("source").value = lead.source;
+    document.getElementById("assignedTo").value = lead.assignedTo;
+    
+    // poc
+    document.getElementById("contactName").value = lead.pointOfContact[0].name;
+    document.getElementById("contactRole").value = lead.pointOfContact[0].role;
+    document.getElementById("contactPhone").value = lead.pointOfContact[0].phone;
+    document.getElementById("contactEmail").value = lead.pointOfContact[0].email;
+    
+}
+
+const getFormattedDate = function(inputDate)
+{
+    console.log("** FRONTEND: Inside getFormattedDate ** ");
+
+    let date = new Date(inputDate);
+
+    const currMonth = date.getMonth() < 10 ? `0${date.getMonth()+1}` : date.getMonth()+1;
+    const currDayNumberOfMonth = date.getUTCDate() < 10 ? `0${date.getUTCDate()}` : date.getUTCDate();
+
+    return `${date.getFullYear()}-${currMonth}-${currDayNumberOfMonth}`
 }

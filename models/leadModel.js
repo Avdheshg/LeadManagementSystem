@@ -22,7 +22,12 @@ const leadSchema = new mongoose.Schema({
         default: "HOT",
         enum: ['HOT', 'WARM', 'COLD'], 
     },
-    source: String,
+    source: 
+    {
+        type: String,
+        default: "Email",
+        enum: ['Phone', 'Email'], 
+    },
     assignedTo: String,
 
     pointOfContact:        

@@ -11,7 +11,36 @@ exports.getOverview = catchAsync(async (req, res) =>
     console.log("*** ViewsController.js :: getOverview ***");
 
     const leads = await Lead.find({});
-    res.status(200).render("index", {leads}); 
+
+    const assignedTo = [
+        "Alice Johnson",
+        "Bob Smith",
+        "Charlie Davis",
+        "Diana Prince",
+        "Ethan Hunt",
+        "Fiona Apple",
+        "George Clooney",
+        "Hannah Montana",
+        "Ian Somerhalder",
+        "Julia Roberts",
+        "Kevin Bacon",
+        "Laura Linney",
+        "Michael Jordan",
+        "Natalie Portman",
+        "Oscar Isaac",
+        "Pamela Anderson",
+        "Quentin Tarantino",
+        "Rachel McAdams",
+        "Samuel L. Jackson",
+        "Tina Fey"
+      ];
+
+    res.status(200).render("index", 
+        {
+            leads,
+            assignedTo 
+        }
+    ); 
 });
  
 exports.getLead = catchAsync(async (req, res) => {
@@ -22,7 +51,7 @@ exports.getLead = catchAsync(async (req, res) => {
 
     const foundRestaurant = await Lead.findOne({leadName: restaurantName});
     let ordersPlaced = await Order.find({leadName: restaurantName});
-    let callLogs = await CallLog.find({leadName: restaurantName});    
+    let callLogs = await CallLog.find({leadName: restaurantName});     
 
     if (foundRestaurant === null)
     { 
@@ -34,7 +63,7 @@ exports.getLead = catchAsync(async (req, res) => {
 
     res.status(200).render("leadDetails", {
         foundRestaurant,
-        ordersPlaced, 
+        ordersPlaced,  
         callLogs
     });
      
